@@ -1,0 +1,15 @@
+---
+title: "Savitha Murali"
+image: "Savitha_Ai.jpg"
+about:
+    template: jolla
+    links:
+    - icon: envelope
+      href: mailto:smurali@ucsd.edu
+    - icon: linkedin
+      href: https://www.linkedin.com/in/savitha-murali/
+---
+
+This is a Quarto website.
+
+To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
