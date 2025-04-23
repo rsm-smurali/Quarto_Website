@@ -9,7 +9,7 @@ about:
     - icon: linkedin
       href: https://www.linkedin.com/in/savitha-murali/
 format: html
-jupyter: quarto-env
+
 ---
 
 This is a Quarto website.
