@@ -10,6 +10,7 @@ website:
         text: About
       - resume.qmd
       - hw1_questions.qmd
+      - hw2_questions.qmd
 
 format:
   html:
