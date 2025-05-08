@@ -374,9 +374,10 @@ coef_table
 - **Blueprinty’s software** has a statistically significant positive coefficient of 0.2076 (p < 0.001). This implies firms using the software are expected to have **23% more patents** than comparable non-customers.
 - **Regional effects** (Northeast, Northwest, etc.) are not statistically significant, suggesting location does not materially affect patent outcomes once other factors are controlled for.
 
-Estimate Effect of Blueprinty's Software via ** Counterfactual Prediction**
+Estimate Effect of Blueprinty's Software via **Counterfactual Prediction**
 
 We simulate two scenarios:
+
 - `X_0`: All firms set to **non-customer** (`iscustomer = 0`)
 - `X_1`: All firms set to **customer** (`iscustomer = 1`)
 
@@ -429,7 +430,6 @@ AirBnB is a popular platform for booking short-term rentals. In March 2017, stud
     - `review_scores_location` = a "quality of location" score from reviews (1-10)
     - `review_scores_value` = a "quality of value" score from reviews (1-10)
     - `instant_bookable` = "t" if instantly bookable, "f" if not
-
 ::::
 
 ### Data Cleaning
@@ -446,22 +446,29 @@ relevant_cols = [
     "review_scores_cleanliness", "review_scores_location", "review_scores_value", "instant_bookable"
 ]
 df_clean = df[relevant_cols].dropna()
-
 ```
 ### Exploratory Data Analysis (EDA)
 
 ### Distribution of Number of Reviews
-
 ```{python}
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 plt.figure(figsize=(8, 6))
-sns.histplot(df_clean["number_of_reviews"], bins=50, kde=False)
-plt.title("Distribution of Number of Reviews")
-plt.xlabel("Number of Reviews")
-plt.ylabel("Count of Listings")
-plt.xlim(0, 100)  
+sns.histplot(
+    df_clean["number_of_reviews"],
+    bins=50,
+    kde=False,
+    color="#1F78B4",
+
+)
+
+plt.title("Distribution of Number of Reviews", fontsize=14, weight="bold")
+plt.xlabel("Number of Reviews", fontsize=12)
+plt.ylabel("Count of Listings", fontsize=12)
+plt.xlim(0, 100)
+plt.grid(axis="y", linestyle="--", alpha=0.5)
+plt.tight_layout()
 plt.show()
 ```
 
@@ -537,9 +544,7 @@ numeric_vars = [
     "number_of_reviews", "bathrooms", "bedrooms", "price", "days",
     "review_scores_cleanliness", "review_scores_location", "review_scores_value"
 ]
-
 correlation_matrix = df_clean[numeric_vars].corr()
-
 plt.figure(figsize=(10, 8))
 sns.heatmap(
     correlation_matrix,
@@ -552,13 +557,13 @@ sns.heatmap(
     linecolor="white",
     annot_kws={"fontsize": 10, "weight": "bold"}
 )
-
 plt.title("Correlation Matrix of Numeric Variables", fontsize=14, weight="bold")
 plt.xticks(rotation=45, ha="right", fontsize=10)
 plt.yticks(rotation=0, fontsize=10)
 plt.tight_layout()
 plt.show()
 ```
+
 ### Poisson Regression Model Using `statsmodels.GLM()`
 
 We model the number of reviews (as a proxy for bookings) using a Poisson regression with the following predictors:
