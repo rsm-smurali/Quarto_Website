@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Savitha Murali">
-<meta name="dcterms.date" content="2025-04-23">
+<meta name="dcterms.date" content="2025-05-07">
 
 <title>A Replication of Karlan and List (2007) – Savitha’s website</title>
 <style>
@@ -139,6 +139,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="nav-link active" href="./hw1_questions.html" aria-current="page"> 
 <span class="menu-text">A Replication of Karlan and List (2007)</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./hw2_questions.html"> 
+<span class="menu-text">Poisson Regression Examples</span></a>
+  </li>  
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -203,7 +207,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 23, 2025</p>
+      <p class="date">May 7, 2025</p>
     </div>
   </div>
   
@@ -660,7 +664,7 @@ median_hhincome -130.5570               0.5438                No</code></pre>
 </div>
 </div>
 </div>
-<figcaption style="text-align:left; font-style:italic;">
+<figcaption style="text-align:Center; font-style:italic;">
 Figure 1: Bar plots of proportion of people who donated
 </figcaption>
 <p>We now statistically test <strong>whether individuals offered a matched donation are more likely to give</strong>. We do this by comparing the <code>gave</code> variable (1 = donated, 0 = did not) between treatment and control.</p>
@@ -756,7 +760,7 @@ Regression p-value: 0.0019</code></pre>
 ====Output From the Code Block====
 </code></pre>
 </div>
-<div id="codeblock3" class="cell-output cell-output-display" data-execution_count="16">
+<div id="codeblock3" class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
@@ -840,12 +844,7 @@ Regression p-value: 0.0019</code></pre>
 </div>
 <section id="observation-3" class="level4">
 <h4 class="anchored" data-anchor-id="observation-3">Observation</h4>
-<p>We tested whether increasing the match ratio (from 1:1 to 2:1 or 3:1) significantly affected the likelihood of making a donation. The results of three t-tests show no statistically significant differences in response rates across the match sizes:</p>
-<ul>
-<li><p>1:1 vs 2:1: p = 0.3345</p></li>
-<li><p>1:1 vs 3:1: p = 0.3101</p></li>
-<li><p>2:1 vs 3:1: p = 0.9600</p></li>
-</ul>
+<p>We tested whether increasing the match ratio (from 1:1 to 2:1 or 3:1) significantly affected the likelihood of making a donation.</p>
 <p>These findings support the authors’ comment in the paper (page 8) that “larger match ratios do not lead to higher response rates.” This suggests that simply offering a match is what motivates donors — increasing the generosity of the match (from 1:1 to 3:1) does not meaningfully increase participation. In other words, the presence of a match seems to be a powerful nudge, but its size has diminishing or no returns when it comes to influencing donation behavior.</p>
 </section>
 </section>
@@ -890,7 +889,7 @@ Regression p-value: 0.0019</code></pre>
 <pre><code>====Output From the Code Block====
 </code></pre>
 </div>
-<div id="codeblock5" class="cell-output cell-output-display" data-execution_count="18">
+<div id="codeblock5" class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
 
@@ -1228,7 +1227,7 @@ Regression p-value: 0.5615</code></pre>
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-body-container">
-<div id="12c17bc9" class="cell" data-execution_count="12">
+<div id="8e69c546" class="cell" data-execution_count="12">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
