@@ -12,7 +12,7 @@ website:
       - hw1_questions.qmd
       - hw2_questions.qmd
       - hw3_questions.qmd
-      - hw4_questions(1).qmd
+      - hw4_questions (1).qmd
 
 format:
   html:
