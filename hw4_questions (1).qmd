@@ -1,0 +1,256 @@
+---
+title: "K-means"
+author: "Savitha Murali"
+date: today
+---
+
+## 1a. K-Means
+
+### Step 1: Load and Prepare the Data (from CSV file)
+```{r}
+# Use base R to read the CSV file (no tidyverse required)
+penguins <- read.csv("palmer_penguins.csv", stringsAsFactors = TRUE)
+head(penguins)
+```
+
+### Step 1.1: Select Required Columns and Drop Missing Values
+```{r}
+penguins_filtered <- penguins[, c("bill_length_mm", "flipper_length_mm")]
+penguins_filtered <- penguins_filtered[complete.cases(penguins_filtered), ]
+cat("Number of rows after dropping NAs:", nrow(penguins_filtered), "\n")
+penguins_filtered[sample(nrow(penguins_filtered), 5), ]
+```
+
+### Step 1.2: Visualize the Data
+```{r}
+if (!require("ggplot2")) install.packages("ggplot2")
+library(ggplot2)
+
+ggplot(penguins_filtered, aes(x = bill_length_mm, y = flipper_length_mm)) +
+  geom_point(color = "steelblue", alpha = 0.7, size = 2) +
+  labs(
+    title = "Scatter Plot of Bill Length vs Flipper Length",
+    x = "Bill Length (mm)",
+    y = "Flipper Length (mm)"
+  ) +
+  theme_minimal()
+```
+
+### Step 2: K-Means Clustering from Scratch in R
+```{r}
+euclidean_dist <- function(a, b) {
+  sqrt(rowSums((a - b)^2))
+}
+```
+
+### Step 2.1: Initialize Centroids
+```{r}
+set.seed(42)
+data_matrix <- as.matrix(penguins_filtered)
+K <- 3
+initial_indices <- sample(1:nrow(data_matrix), K)
+centroids <- data_matrix[initial_indices, ]
+print(centroids)
+```
+
+### Step 2.2: Run K-Means Algorithm with Image Saving
+```{r}
+max_iter <- 10
+clusters <- rep(0, nrow(data_matrix))
+
+for (iter in 1:max_iter) {
+  for (i in 1:nrow(data_matrix)) {
+    distances <- apply(centroids, 1, function(centroid) {
+      sum((data_matrix[i, ] - centroid)^2)
+    })
+    clusters[i] <- which.min(distances)
+  }
+
+  new_centroids <- centroids
+  for (k in 1:K) {
+    cluster_points <- data_matrix[clusters == k, ]
+    if (nrow(cluster_points) > 0) {
+      new_centroids[k, ] <- colMeans(cluster_points)
+    }
+  }
+
+  cluster_df <- as.data.frame(data_matrix)
+  cluster_df$cluster <- as.factor(clusters)
+  centroid_df <- as.data.frame(new_centroids)
+  colnames(centroid_df) <- c("bill_length_mm", "flipper_length_mm")
+
+  p <- ggplot(cluster_df, aes(x = bill_length_mm, y = flipper_length_mm, color = cluster)) +
+    geom_point(size = 2, alpha = 0.7) +
+    geom_point(data = centroid_df, aes(x = bill_length_mm, y = flipper_length_mm),
+               color = "black", size = 5, shape = 8) +
+    scale_color_manual(values = c("#E69F00", "#56B4E9", "#009E73")) +
+    labs(title = paste("K-Means Iteration", iter),
+         x = "Bill Length (mm)",
+         y = "Flipper Length (mm)") +
+    theme_minimal(base_size = 14) +
+    theme(panel.grid.major = element_line(color = "grey90"),
+          legend.position = "none")
+
+  print(p)
+
+  ggsave(filename = sprintf("kmeans_iter_%02d.png", iter),
+         plot = p + theme(plot.background = element_rect(fill = "white", color = NA)),
+         width = 6, height = 5, dpi = 150)
+
+  if (all(new_centroids == centroids)) {
+    cat("Converged at iteration", iter, "\n")
+    break
+  }
+  centroids <- new_centroids
+}
+```
+
+### Step 3: Compare with Built-in KMeans and Evaluate
+```{r}
+if (!require("cluster")) install.packages("cluster")
+if (!require("factoextra")) install.packages("factoextra")
+library(cluster)
+library(factoextra)
+
+wcss <- numeric()
+silhouette_scores <- numeric()
+
+for (k in 2:7) {
+  set.seed(42)
+  kmeans_model <- kmeans(data_matrix, centers = k, nstart = 10)
+  wcss[k] <- sum(kmeans_model$withinss)
+  sil <- silhouette(kmeans_model$cluster, dist(data_matrix))
+  silhouette_scores[k] <- mean(sil[, 3])
+}
+
+wcss_df <- data.frame(K = 2:7, WCSS = wcss[2:7])
+sil_df <- data.frame(K = 2:7, Silhouette = silhouette_scores[2:7])
+```
+
+### Step 3.2: Plot Elbow Curve
+```{r}
+ggplot(wcss_df, aes(x = K, y = WCSS)) +
+  geom_line(color = "steelblue", size = 1.2) +
+  geom_point(size = 3) +
+  labs(title = "Elbow Method: WCSS vs K", x = "Number of Clusters (K)", y = "WCSS") +
+  theme_minimal()
+```
+
+### Step 3.3: Plot Silhouette Scores
+```{r}
+ggplot(sil_df, aes(x = K, y = Silhouette)) +
+  geom_line(color = "darkgreen", size = 1.2) +
+  geom_point(size = 3) +
+  labs(title = "Silhouette Scores vs K", x = "Number of Clusters (K)", y = "Silhouette") +
+  theme_minimal()
+```
+
+### Recommendations 
+
+### Elbow Method (WCSS)
+The plot showed a sharp drop from K = 2 to K = 3, after which the reduction in WCSS slowed.
+
+This indicates an elbow at K = 3, which often suggests that K = 3 captures the main structure in the data.
+
+### Silhouette Score
+The highest average silhouette score was observed at K = 2, indicating that the data points are more clearly and tightly grouped when divided into 2 clusters.
+
+Silhouette scores typically favor compact and well-separated clusters.
+
+### Final Recommendation:
+Metric	Suggested K
+Elbow Method	3
+Silhouette Score	2
+
+Therefore, K = 2 is recommended as the "right" number of clusters, because it yields the best separation and tightest clusters according to the silhouette score, which is a more interpretable metric for cluster quality.
+
+---
+
+## 2a. K-Nearest Neighbors
+
+### Generate Data
+```{r}
+set.seed(42)
+n <- 100
+x1 <- runif(n, -3, 3)
+x2 <- runif(n, -3, 3)
+boundary <- sin(4 * x1) + x1
+y <- ifelse(x2 > boundary, 1, 0) |> as.factor()
+dat <- data.frame(x1 = x1, x2 = x2, y = y)
+```
+
+### Plot with Boundary
+```{r}
+x1_seq <- seq(-3, 3, length.out = 300)
+boundary_curve <- sin(4 * x1_seq) + x1_seq
+boundary_df <- data.frame(x1 = x1_seq, x2 = boundary_curve)
+
+ggplot(dat, aes(x = x1, y = x2, color = y)) +
+  geom_point(size = 2, alpha = 0.8) +
+  geom_line(data = boundary_df, aes(x = x1, y = x2), color = "black") +
+  scale_color_manual(values = c("#E69F00", "#56B4E9")) +
+  theme_minimal()
+```
+
+### Generate Test Set
+```{r}
+set.seed(99)
+n_test <- 100
+x1_test <- runif(n_test, -3, 3)
+x2_test <- runif(n_test, -3, 3)
+boundary_test <- sin(4 * x1_test) + x1_test
+y_test <- ifelse(x2_test > boundary_test, 1, 0) |> as.factor()
+test_dat <- data.frame(x1 = x1_test, x2 = x2_test, y = y_test)
+```
+
+### KNN Function
+```{r}
+euclidean_distance <- function(a, b) {
+  sqrt(sum((a - b)^2))
+}
+
+knn_predict <- function(train_x, train_y, test_x, k = 3) {
+  predictions <- vector(length = nrow(test_x))
+  for (i in 1:nrow(test_x)) {
+    distances <- apply(train_x, 1, function(row) euclidean_distance(row, test_x[i, ]))
+    nearest_idx <- order(distances)[1:k]
+    nearest_labels <- train_y[nearest_idx]
+    predictions[i] <- names(sort(table(nearest_labels), decreasing = TRUE))[1]
+  }
+  return(as.factor(predictions))
+}
+```
+
+### Evaluate for k = 1 to 30
+```{r}
+train_x <- dat[, c("x1", "x2")]
+train_y <- dat$y
+test_x <- test_dat[, c("x1", "x2")]
+test_y <- test_dat$y
+
+accuracy_results <- numeric(30)
+for (k in 1:30) {
+  preds <- knn_predict(train_x, train_y, test_x, k)
+  accuracy_results[k] <- mean(preds == test_y) * 100
+}
+
+accuracy_df <- data.frame(k = 1:30, accuracy = accuracy_results)
+best_k <- which.max(accuracy_results)
+best_accuracy <- accuracy_results[best_k]
+
+cat("✅ Optimal k:", best_k, "\n📈 Highest accuracy:", round(best_accuracy, 2), "%\n")
+```
+
+### Plot Accuracy vs K
+```{r}
+ggplot(accuracy_df, aes(x = k, y = accuracy)) +
+  geom_line(color = "steelblue", linewidth = 1.2) +
+  geom_point(size = 2) +
+  geom_vline(xintercept = best_k, linetype = "dashed", color = "red") +
+  labs(
+    title = "KNN Classification Accuracy vs K",
+    x = "Number of Neighbors (k)",
+    y = "Accuracy (%)"
+  ) +
+  theme_minimal(base_size = 14)
+```
